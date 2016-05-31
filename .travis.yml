@@ -10,9 +10,11 @@ services:
   - docker
 
 before_install:
-  - docker build -t adrienmo/hbase-docker .
+  - docker pull adrienmo/hbase
   - mkdir data
-  - id=$(docker run --name=hbase-docker -h hbase-docker -d -v $PWD/data:/data adrienmo/hbase-docker)
+  - id=$(docker run --name=hbase-docker -h hbase-docker -d -v $PWD/data:/data adrienmo/hbase)
+  - docker cp migration.sh $id:/migration.sh
+  - docker exec -i -t $id /bin/bash /migration.sh
   - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
   - echo "$ip hbase-docker" >> /etc/hosts
   - echo "hbase server running on $ip"
