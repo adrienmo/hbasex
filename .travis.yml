@@ -19,4 +19,4 @@ before_install:
   - echo "hbase server running on $ip"
 
 script:
-  - MIX_ENV=travis mix test
+  - MIX_ENV=travis mix do deps.get, compile, test
