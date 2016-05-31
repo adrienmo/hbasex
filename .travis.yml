@@ -16,8 +16,8 @@ before_install:
   - docker cp migration.sh $id:/migration.sh
   - docker exec -i -t $id /bin/bash /migration.sh
   - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
-  - sudo echo "$ip hbase-docker" >> /etc/hosts
   - echo "hbase server running on $ip"
+  - sudo echo "$ip hbase-docker" >> /etc/hosts
 
 script:
   - mix test
