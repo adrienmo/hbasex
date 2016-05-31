@@ -1,0 +1,21 @@
+language: elixir
+elixir:
+  - 1.2.5
+otp_release:
+  - 18.2.1
+
+sudo: required
+
+services:
+  - docker
+
+before_install:
+  - docker build -t adrienmo/hbase-docker .
+  - mkdir data
+  - id=$(docker run --name=hbase-docker -h hbase-docker -d -v $PWD/data:/data adrienmo/hbase-docker)
+  - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
+  - echo "$ip hbase-docker" >> /etc/hosts
+  - echo "hbase server running on $ip"
+
+script:
+  - mix test
