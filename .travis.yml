@@ -9,13 +9,20 @@ services:
   - docker
 
 before_install:
+  # Install thrift
+  - sudo apt-get update -qq
+  - sudo apt-get install libboost-dev libboost-test-dev libboost-program-options-dev libevent-dev automake libtool flex bison pkg-config g++ libssl-dev
+  - wget http://www.us.apache.org/dist/thrift/0.9.1/thrift-0.9.1.tar.gz
+  - tar xfz thrift-0.9.1.tar.gz
+  - cd thrift-0.9.1 && ./configure && sudo make install
+  # Setup hbase
   - docker pull adrienmo/hbase
   - mkdir data
   - id=$(docker run --name=hbase-docker -h hbase-docker -d -v $PWD/data:/data adrienmo/hbase)
+  # Perform database migration
   - docker cp migration.sh $id:/migration.sh
   - docker exec -i -t $id /bin/bash /migration.sh
   - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
-  - echo "hbase server running on $ip"
 
 script:
   - "MIX_ENV=travis mix do deps.get, compile, test"
