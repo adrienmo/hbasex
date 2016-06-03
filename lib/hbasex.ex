@@ -1,16 +1,5 @@
 defmodule Hbasex do
-  alias Hbasex.Models.TGet
-  alias Hbasex.Models.TColumn
-  alias Hbasex.Models.TColumnValue
-  alias Hbasex.Models.TPut
-
-  #def start(_type, _args) do
-  #  import Supervisor.Spec, warn: false
-  #  children = [worker(Hbasex.Client, [])]
-
-  #  opts = [strategy: :one_for_one, name: Hbasex.Supervisor]
-  #  Supervisor.start_link(children, opts)
-  #end
+  alias Hbasex.Models.{TGet, TColumn, TColumnValue, TPut, TScan}
 
   def start_link(host, port) do
     Hbasex.Client.start_link(host, port)
@@ -33,6 +22,10 @@ defmodule Hbasex do
     TPut.new(attributes: :dict.new(), row: row, columnValues: column_values)
   end
 
+  defp get_t_scan() do
+    TScan.new(attributes: :dict.new())
+  end
+
   def get(client_pid, table_name, row, columns \\ []) do
     tcolumns = for column <- columns, do: get_t_column(column)
     tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
@@ -46,5 +39,9 @@ defmodule Hbasex do
 
   def put(client_pid, table_name, row, map) do
     Hbasex.Client.put(client_pid, table_name, get_t_put(row, map))
+  end
+
+  def scan(client_pid, table_name, nb_rows) do
+    Hbasex.Client.getScannerResults(client_pid, table_name, get_t_scan(), nb_rows)
   end
 end
