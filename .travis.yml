@@ -14,7 +14,7 @@ before_install:
   - sudo apt-get install libboost-dev libboost-test-dev libboost-program-options-dev libevent-dev automake libtool flex bison pkg-config g++ libssl-dev
   - wget http://apache.mirror.iweb.ca/thrift/0.9.3/thrift-0.9.3.tar.gz
   - tar xfz thrift-0.9.3.tar.gz
-  - cd thrift-0.9.3 && ./configure && sudo make install
+  - cd thrift-0.9.3 && ./configure --without-cpp --without-c_glib --without-java --without-python --without-nodejs --without-go --without-perl --without-php --without-php_extension --without-ruby && sudo make install
   # Setup hbase
   - docker pull adrienmo/hbase
   - mkdir data
