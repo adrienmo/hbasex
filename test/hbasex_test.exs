@@ -5,6 +5,8 @@ defmodule HbasexTest do
   setup_all do
     host = Application.get_env(:hbasex, :host, "localhost")
     port = Application.get_env(:hbasex, :port, 9090)
+
+    IO.puts "Starting test on server: #{host}:#{port}"
     {:ok, client_pid} = Hbasex.start_link(host, port)
     {:ok, client_pid: client_pid}
   end

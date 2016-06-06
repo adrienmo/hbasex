@@ -18,11 +18,14 @@ before_install:
   # Setup hbase
   - docker pull adrienmo/hbase
   - mkdir data
-  - id=$(docker run --name=hbase-docker -h hbase-docker -d -v $PWD/data:/data adrienmo/hbase)
+  - id=$(docker run -d -v $PWD/data:/data adrienmo/hbase)
   # Perform database migration
   - docker cp migration.sh $id:/migration.sh
   - docker exec -i -t $id /bin/bash /migration.sh
   - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
+  - echo "hbase started on $ip"
 
 script:
-  - "MIX_ENV=travis mix do deps.get, compile, test"
+  - MIX_ENV=travis mix deps.get
+  - MIX_ENV=travis mix compile
+  - MIX_ENV=travis mix test
