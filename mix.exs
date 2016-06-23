@@ -9,10 +9,12 @@ defmodule Hbasex.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     #comment out thrift file gen
-     #compilers: [:thrift | Mix.compilers],
-     #thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
+     ##### Uncomment those two lines to generate the /src folder
+     # compilers: [:thrift | Mix.compilers],
+     # thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
+     description: "A HBase driver for Elixir using HBase Thrift Interface (v2)",
      elixirc_options: [warnings_as_errors: true],
+     package: package,
      deps: deps]
   end
 
@@ -22,5 +24,14 @@ defmodule Hbasex.Mixfile do
 
   defp deps do
     [{:riffed, github: "pinterest/riffed", tag: "1.0.0", submodules: true}]
+  end
+
+  defp package do
+    [
+      files: ~w(lib src README.md LICENSE VERSION mix.exs),
+      maintainers: ["Adrien Moreau"],
+      licenses: ["MIT"],
+      links: %{github: "https://github.com/adrienmo/hbasex"}
+    ]
   end
 end

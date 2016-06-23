@@ -1,6 +1,8 @@
 # Hbasex
+[![Travis](https://img.shields.io/travis/adrienmo/hbasex.svg?branch=master&style=flat-square)](https://travis-ci.org/adrienmo/hbasex)
+[![Hex.pm](https://img.shields.io/hexpm/v/hbasex.svg?style=flat-square)](https://hex.pm/packages/hbasex)
 
-A HBase driver for Elixir using Thrift
+A HBase driver for Elixir using HBase Thrift Interface (v2)
 
 ## Usage
 
