@@ -1,4 +1,5 @@
 use Mix.Config
 
-config :hbasex, :host, "hbase"
-config :hbasex, :port, 9090
+config :hbasex,
+  host: "hbase",
+  port: 9090

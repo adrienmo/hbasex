@@ -1,8 +1,40 @@
 defmodule Hbasex do
+  use Application
+
   alias Hbasex.Models.{TGet, TColumn, TColumnValue, TPut, TScan}
 
-  def start_link(host, port) do
-    Hbasex.Client.start_link(host, port)
+  @default_host "localhost"
+  @default_port 9090
+
+  def start(_type, _args) do
+    config = Application.get_all_env(:hbasex) |> Map.new()
+    Hbasex.Pool.start_link(config)
+  end
+
+  def connect(config \\ %{}) do
+    config
+    |> Map.put_new(:host, @default_host)
+    |> Map.put_new(:port, @default_port)
+    |> Hbasex.Pool.connect()
+  end
+
+  def get(table_name, row, columns \\ []) do
+    tcolumns = for column <- columns, do: get_t_column(column)
+    tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
+    result = Hbasex.Pool.exec(:get, [table_name, tget])
+
+    Enum.reduce(result.columnValues, %{}, fn(x, acc) ->
+      column_name = x.family <> ":" <> x.qualifier
+      Map.put(acc, column_name, x.value)
+    end)
+  end
+
+  def put(table_name, row, map) do
+    Hbasex.Pool.exec(:put, [table_name, get_t_put(row, map)])
+  end
+
+  def scan(table_name, nb_rows) do
+    Hbasex.Pool.exec(:getScannerResults, [table_name, get_t_scan(), nb_rows])
   end
 
   defp get_t_column(column) do
@@ -24,24 +56,5 @@ defmodule Hbasex do
 
   defp get_t_scan() do
     TScan.new(attributes: :dict.new())
-  end
-
-  def get(client_pid, table_name, row, columns \\ []) do
-    tcolumns = for column <- columns, do: get_t_column(column)
-    tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
-    result = Hbasex.Client.get(client_pid, table_name, tget)
-
-    Enum.reduce(result.columnValues, %{}, fn(x, acc) ->
-      column_name = x.family <> ":" <> x.qualifier
-      Map.put(acc, column_name, x.value)
-    end)
-  end
-
-  def put(client_pid, table_name, row, map) do
-    Hbasex.Client.put(client_pid, table_name, get_t_put(row, map))
-  end
-
-  def scan(client_pid, table_name, nb_rows) do
-    Hbasex.Client.getScannerResults(client_pid, table_name, get_t_scan(), nb_rows)
   end
 end

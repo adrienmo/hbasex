@@ -19,11 +19,14 @@ defmodule Hbasex.Mixfile do
   end
 
   def application do
-    [applications: [:logger]]
+    [applications: [:logger], mod: {Hbasex, []}]
   end
 
   defp deps do
-    [{:riffed, github: "pinterest/riffed", tag: "1.0.0", submodules: true}]
+    [
+      {:riffed, github: "pinterest/riffed", tag: "1.0.0", submodules: true},
+      {:poolboy, "~> 1.5"}
+    ]
   end
 
   defp package do
