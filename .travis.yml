@@ -1,6 +1,6 @@
 language: elixir
 elixir:
-  - 1.2.0
+  - 1.2.5
 otp_release:
   - 18.0
 group: edge
@@ -28,5 +28,4 @@ before_install:
 script:
   - MIX_ENV=travis mix deps.get
   - MIX_ENV=travis mix compile
-  - docker logs $id #debug travis
   - MIX_ENV=travis mix test
