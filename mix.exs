@@ -9,8 +9,9 @@ defmodule Hbasex.Mixfile do
      elixir: "~> 1.2",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
-     compilers: [:thrift | Mix.compilers],
-     thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
+     #comment out thrift file gen
+     #compilers: [:thrift | Mix.compilers],
+     #thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
      elixirc_options: [warnings_as_errors: true],
      deps: deps]
   end

@@ -1,4 +1,4 @@
 use Mix.Config
 
-config :hbasex, :host, "hbase-docker"
+config :hbasex, :host, "hbase"
 config :hbasex, :port, 9090
