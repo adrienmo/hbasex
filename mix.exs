@@ -12,14 +12,20 @@ defmodule Hbasex.Mixfile do
      ##### Uncomment those two lines to generate the /src folder
      # compilers: [:thrift | Mix.compilers],
      # thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
-     description: "A HBase driver for Elixir using HBase Thrift Interface (v2)",
+     description: description,
      elixirc_options: [warnings_as_errors: true],
      package: package,
      deps: deps]
   end
 
+  defp description do
+    """
+      A HBase driver for Elixir using HBase Rest and Thrift Interface (v2)
+    """
+  end
+
   def application do
-    [applications: [:logger], mod: {Hbasex, []}]
+    [applications: [:logger, :inets], mod: {Hbasex, []}]
   end
 
   defp deps do

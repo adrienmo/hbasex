@@ -6,7 +6,7 @@ defmodule Hbasex.Worker do
   end
 
   def init(config) do
-    {:ok, pid} = Hbasex.Client.start_link(config.host, config.port)
+    {:ok, pid} = Hbasex.Client.start_link(config.host, config.thrift_port)
     {:ok, pid}
   end
 

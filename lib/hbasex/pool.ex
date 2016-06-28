@@ -10,7 +10,7 @@ defmodule Hbasex.Pool do
   end
 
   def init(config) do
-    children = unless is_nil(config[:host]) and is_nil(config[:port]) do
+    children = unless is_nil(config[:host]) and is_nil(config[:thrift_port]) do
       [get_child_specs(config)]
     else
       []
