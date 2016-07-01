@@ -39,11 +39,17 @@ defmodule Hbasex do
     Hbasex.RestClient.create(config, table_name, column_family)
   end
 
-  def get(table_name, row, columns \\ []) do
-    tcolumns = for column <- columns, do: get_t_column(column)
+  def get(table_name, row, map \\ %{}) do
+    tcolumns = for {family, qualifiers} <- map do
+      for qualifier <- qualifiers do
+        TColumn.new(family: family, qualifier: qualifier)
+      end
+    end
+    |> List.flatten
     tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
     Hbasex.Pool.exec(:get, [table_name, tget])
     |> parse_row_result()
+    |> elem(1)
   end
 
   def put(table_name, row, map) do
@@ -55,20 +61,13 @@ defmodule Hbasex do
     |> Enum.map(&parse_row_result/1)
   end
 
-  defp get_t_column(column) do
-    [family, qualifier] = String.split(column, ":")
-    TColumn.new(family: family, qualifier: qualifier)
-  end
-
-  defp get_t_column_value(column, value) do
-    [family, qualifier] = String.split(column, ":")
-    TColumnValue.new(family: family, qualifier: qualifier, value: value)
-  end
-
   defp get_t_put(row, map) do
-    column_values = for {column, value} <- map do
-      get_t_column_value(column, value)
+    column_values = for {family, columns} <- map do
+      for {qualifier, value} <- columns do
+        TColumnValue.new(family: family, qualifier: qualifier, value: value)
+      end
     end
+    |> List.flatten
     TPut.new(attributes: :dict.new(), row: row, columnValues: column_values)
   end
 
@@ -83,10 +82,14 @@ defmodule Hbasex do
   end
 
   defp parse_row_result(result) do
-    Enum.reduce(result.columnValues, %{}, fn(x, acc) ->
-      column_name = x.family <> ":" <> x.qualifier
-      Map.put(acc, column_name, x.value)
-    end)
+    {
+      result.row,
+      result.columnValues
+      |> Enum.reduce(%{}, fn(x, acc) ->
+        Map.update(acc, x.family, %{x.qualifier => x.value},
+          &(Map.put(&1, x.qualifier, x.value)))
+      end)
+    }
   end
 
   defp expand_scan_options(acc), do: expand_scan_options(acc, [])
