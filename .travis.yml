@@ -19,7 +19,6 @@ before_install:
   - docker pull adrienmo/hbase
   - mkdir data
   - id=$(docker run -d -v $PWD/data:/data adrienmo/hbase)
-  # Perform database migration
   - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
   - echo "hbase started on $ip"
 

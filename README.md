@@ -16,7 +16,7 @@ the HBase Thrift Interface (v2).
   1. Add hbasex to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:hbasex, github: "adrienmo/hbasex", tag: "0.1.2"}]
+          [{:hbasex, github: "adrienmo/hbasex", tag: "0.1.4"}]
         end
 
   2. Ensure hbasex is started before your application:
@@ -43,16 +43,19 @@ config :hbasex,
 
 ```elixir
 # Using REST interface
-Hbasex.create("abc", ["a"])
+Hbasex.create_table("abc", ["a"])
 
-Hbasex.delete("abc")
+Hbasex.delete_table("abc")
 
 # Using thrift interface
-Hbasex.put("abc", "123", %{"a:c1" => 1, "a:c2" => 2})
+Hbasex.put("abc", "123", %{"a" => %{"c1" => 1, "c2" => 2}})
 
 Hbasex.get("abc", "123")
-Hbasex.get("abc", "123", ["a:c1"])
+Hbasex.get("abc", "123", %{"a" => ["c1"]})
 
 Hbasex.scan("abc", 100)
 Hbasex.scan("abc", 100, prefix: "user123#")
+
+Hbasex.delete("abc", "123")
+Hbasex.delete("abc", ["123", "456"])
 ```

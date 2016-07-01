@@ -1,7 +1,7 @@
 defmodule Hbasex do
   use Application
 
-  alias Hbasex.Models.{TGet, TColumn, TColumnValue, TPut, TScan}
+  alias Hbasex.Models.{TGet, TColumn, TColumnValue, TPut, TScan, TDelete}
 
   @default_host "localhost"
   @default_thrift_port 9090
@@ -29,12 +29,12 @@ defmodule Hbasex do
     |> Hbasex.Pool.connect()
   end
 
-  def delete(config \\ nil, table_name) do
+  def delete_table(config \\ nil, table_name) do
     config = get_config(config)
     Hbasex.RestClient.delete(config, table_name)
   end
 
-  def create(config \\ nil, table_name, column_family) do
+  def create_table(config \\ nil, table_name, column_family) do
     config = get_config(config)
     Hbasex.RestClient.create(config, table_name, column_family)
   end
@@ -56,6 +56,15 @@ defmodule Hbasex do
     Hbasex.Pool.exec(:put, [table_name, get_t_put(row, map)])
   end
 
+  def delete(table_name, row) when is_bitstring(row) do
+    Hbasex.Pool.exec(:deleteSingle, [table_name, get_t_delete(row)])
+  end
+
+  def delete(table_name, rows) when is_list(rows) do
+    t_deletes = rows |> Enum.map(&get_t_delete/1)
+    Hbasex.Pool.exec(:deleteMultiple, [table_name, t_deletes])
+  end
+
   def scan(table_name, nb_rows, options \\ []) do
     Hbasex.Pool.exec(:getScannerResults, [table_name, get_t_scan(options), nb_rows])
     |> Enum.map(&parse_row_result/1)
@@ -69,6 +78,16 @@ defmodule Hbasex do
     end
     |> List.flatten
     TPut.new(attributes: :dict.new(), row: row, columnValues: column_values)
+  end
+
+  defp get_t_delete(row, args \\ []) do
+    args = [{:row, row} | args]
+    args = if is_nil(args[:attributes]) do
+      [{:attributes, :dict.new()}| args]
+    else
+      args
+    end
+    TDelete.new(args)
   end
 
   defp get_t_scan(options) do

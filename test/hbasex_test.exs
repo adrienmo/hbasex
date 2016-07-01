@@ -3,10 +3,12 @@ defmodule HbasexTest do
   doctest Hbasex
 
   setup_all do
-    Hbasex.delete("abc")
-    Hbasex.delete("scan_test")
-    Hbasex.create("abc",["a"])
-    Hbasex.create("scan_test",["a"])
+    Hbasex.delete_table("abc")
+    Hbasex.delete_table("scan_test")
+    Hbasex.delete_table("delete_test")
+    Hbasex.create_table("abc",["a"])
+    Hbasex.create_table("scan_test",["a"])
+    Hbasex.create_table("delete_test",["a"])
     :ok
   end
 
@@ -35,5 +37,19 @@ defmodule HbasexTest do
     assert length(Hbasex.scan("scan_test", 2, prefix: "12#")) == 2
     assert length(Hbasex.scan("scan_test", 10)) == 7
     assert Hbasex.scan("scan_test", 10, prefix: "15#") == [{"15#10003", %{"a" => %{"value" => "1"}}}]
+  end
+
+  test "put and delete" do
+    for i <- 1..10 do
+      Hbasex.put("delete_test", to_string(i), %{"a" => %{"a" => "1"}})
+    end
+    assert length(Hbasex.scan("delete_test", 10)) == 10
+
+    Hbasex.delete("delete_test", "1")
+    assert Hbasex.get("delete_test", "1") == %{}
+    assert Hbasex.get("delete_test", "2") != %{}
+
+    Hbasex.delete("delete_test", ["2", "3", "4"])
+    assert length(Hbasex.scan("delete_test", 10)) == 6
   end
 end
