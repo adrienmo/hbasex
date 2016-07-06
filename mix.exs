@@ -13,7 +13,7 @@ defmodule Hbasex.Mixfile do
      # compilers: [:thrift | Mix.compilers],
      # thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
      description: description,
-     elixirc_options: [warnings_as_errors: true],
+     #elixirc_options: [warnings_as_errors: true],
      package: package,
      deps: deps]
   end
@@ -25,7 +25,7 @@ defmodule Hbasex.Mixfile do
   end
 
   def application do
-    [applications: [:logger, :inets], mod: {Hbasex, []}]
+    [applications: [:logger, :inets, :riffed], mod: {Hbasex, []}]
   end
 
   defp deps do
