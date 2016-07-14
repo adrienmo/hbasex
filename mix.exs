@@ -30,7 +30,7 @@ defmodule Hbasex.Mixfile do
 
   defp deps do
     [
-      {:riffed, github: "pinterest/riffed", tag: "1.0.0", submodules: true},
+      {:riffed, github: "adrienmo/riffed", tag: "no_lager"},
       {:poolboy, "~> 1.5"}
     ]
   end

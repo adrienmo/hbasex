@@ -16,7 +16,7 @@ the HBase Thrift Interface (v2).
   1. Add hbasex to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:hbasex, github: "adrienmo/hbasex", tag: "0.1.4"}]
+          [{:hbasex, github: "adrienmo/hbasex", tag: "0.1.6"}]
         end
 
   2. Ensure hbasex is started before your application:
