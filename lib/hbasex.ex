@@ -39,35 +39,84 @@ defmodule Hbasex do
     Hbasex.RestClient.create(config, table_name, column_family)
   end
 
+  def get!(table_name, row, map \\ %{}) do
+    {:ok, result} = get(table_name, row, map)
+    result
+  end
+
   def get(table_name, row, map \\ %{}) do
-    tcolumns = for {family, qualifiers} <- map do
-      for qualifier <- qualifiers do
-        TColumn.new(family: family, qualifier: qualifier)
+    try do
+      tcolumns = for {family, qualifiers} <- map do
+        for qualifier <- qualifiers do
+          TColumn.new(family: family, qualifier: qualifier)
+        end
       end
+      |> List.flatten
+      tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
+      {:ok, Hbasex.Pool.exec(:get, [table_name, tget])
+      |> parse_row_result()
+      |> elem(1)}
+    catch
+      :exit, log ->
+        extract_errors(log)
     end
-    |> List.flatten
-    tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
-    Hbasex.Pool.exec(:get, [table_name, tget])
-    |> parse_row_result()
-    |> elem(1)
+  end
+
+  def put!(table_name, row, map) do
+    {:ok, result} = put(table_name, row, map)
+    result
   end
 
   def put(table_name, row, map) do
-    Hbasex.Pool.exec(:put, [table_name, get_t_put(row, map)])
+    try do
+      result = Hbasex.Pool.exec(:put, [table_name, get_t_put(row, map)])
+      {:ok, result}
+    catch
+      :exit, log ->
+        extract_errors(log)
+    end
+  end
+
+  def delete!(table_name, row) do
+    {:ok, result} = delete(table_name, row)
+    result
   end
 
   def delete(table_name, row) when is_bitstring(row) do
-    Hbasex.Pool.exec(:deleteSingle, [table_name, get_t_delete(row)])
+    try do
+      result = Hbasex.Pool.exec(:deleteSingle, [table_name, get_t_delete(row)])
+      {:ok, result}
+    catch
+      :exit, log ->
+        extract_errors(log)
+    end
   end
 
   def delete(table_name, rows) when is_list(rows) do
-    t_deletes = rows |> Enum.map(&get_t_delete/1)
-    Hbasex.Pool.exec(:deleteMultiple, [table_name, t_deletes])
+    try do
+      t_deletes = rows |> Enum.map(&get_t_delete/1)
+      results = Hbasex.Pool.exec(:deleteMultiple, [table_name, t_deletes])
+      {:ok, results}
+    catch
+      :exit, log ->
+        extract_errors(log)
+    end
+  end
+
+  def scan!(table_name, nb_rows, options \\ []) do
+    {:ok, results} = scan(table_name, nb_rows, options)
+    results
   end
 
   def scan(table_name, nb_rows, options \\ []) do
-    Hbasex.Pool.exec(:getScannerResults, [table_name, get_t_scan(options), nb_rows])
-    |> Enum.map(&parse_row_result/1)
+    try do
+      results = Hbasex.Pool.exec(:getScannerResults, [table_name, get_t_scan(options), nb_rows])
+      |> Enum.map(&parse_row_result/1)
+      {:ok, results}
+    catch
+      :exit, log ->
+        extract_errors(log)
+    end
   end
 
   defp get_t_put(row, map) do
@@ -109,6 +158,15 @@ defmodule Hbasex do
           &(Map.put(&1, x.qualifier, x.value)))
       end)
     }
+  end
+
+  defp extract_errors(log) do
+    case log do
+      {{_, {_,{:exception, error}}}, _}  ->
+        {:error, error}
+      _ ->
+        {:error, nil}
+    end
   end
 
   defp expand_scan_options(acc), do: expand_scan_options(acc, [])
