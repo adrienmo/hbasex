@@ -39,20 +39,15 @@ defmodule Hbasex do
     Hbasex.RestClient.create(config, table_name, column_family)
   end
 
-  def get!(table_name, row, map \\ %{}) do
-    {:ok, result} = get(table_name, row, map)
+  def get!(table_name, row, options \\ %{}) do
+    {:ok, result} = get(table_name, row, options)
     result
   end
 
-  def get(table_name, row, map \\ %{}) do
+  def get(table_name, row, options \\ %{}) do
     try do
-      tcolumns = for {family, qualifiers} <- map do
-        for qualifier <- qualifiers do
-          TColumn.new(family: family, qualifier: qualifier)
-        end
-      end
-      |> List.flatten
-      tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns)
+      tcolumns = if is_nil(options[:columns]), do: nil, else: prepare_columns(options[:columns])
+      tget = TGet.new(attributes: :dict.new(), row: row, columns: tcolumns, filterString: options[:filter_string])
       {:ok, Hbasex.Pool.exec(:get, [table_name, tget])
       |> parse_row_result()
       |> elem(1)}
@@ -60,6 +55,15 @@ defmodule Hbasex do
       :exit, log ->
         extract_errors(log)
     end
+  end
+
+  def prepare_columns(columns) do
+    tcolumns = for {family, qualifiers} <- columns do
+      for qualifier <- qualifiers do
+        TColumn.new(family: family, qualifier: qualifier)
+      end
+    end
+    |> List.flatten
   end
 
   def put!(table_name, row, map) do
