@@ -17,10 +17,10 @@ defmodule HbasexTest do
     result = Hbasex.get!("abc", "123")
     assert result == %{"a" => %{"c1" => "efg", "c2" => "hjk"}}
 
-    result = Hbasex.get!("abc", "123", %{"a" => ["c2"]})
-    assert result == %{"a" => %{"c2" => "hjk"}}
+    result = Hbasex.get!("abc", "123", columns: %{"a" => ["c2"]})
+    assert result == %{"a" =>  %{"c2" => "hjk"}}
 
-    result = Hbasex.get!("abc", "123", %{"a" => ["random_value"]})
+    result = Hbasex.get!("abc", "123", columns: %{"a" => ["random_value"]})
     assert result == %{}
    end
 
@@ -37,6 +37,13 @@ defmodule HbasexTest do
     assert length(Hbasex.scan!("scan_test", 2, prefix: "12#")) == 2
     assert length(Hbasex.scan!("scan_test", 10)) == 7
     assert Hbasex.scan!("scan_test", 10, prefix: "15#") == [{"15#10003", %{"a" => %{"value" => "1"}}}]
+  end
+
+  test "get with filter string" do
+    Hbasex.put!("abc", "9123", %{"a" => %{"longkey1" => "efg", "longkey2" => "hjk", "longkey3" => "plm"}})
+    filter_string = Hbasex.Helpers.filter_columns_containing(["key1", "key3"])
+    {:ok, result} = Hbasex.get("abc", "9123", filter_string: filter_string)
+    assert result == %{"a" => %{"longkey1" => "efg", "longkey3" => "plm"}}
   end
 
   test "put and delete" do

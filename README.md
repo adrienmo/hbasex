@@ -16,7 +16,7 @@ the HBase Thrift Interface (v2).
   1. Add hbasex to your list of dependencies in `mix.exs`:
 
         def deps do
-          [{:hbasex, github: "adrienmo/hbasex", tag: "0.1.6"}]
+          [{:hbasex, github: "adrienmo/hbasex", tag: "0.2.0"}]
         end
 
   2. Ensure hbasex is started before your application:
@@ -51,7 +51,9 @@ Hbasex.delete_table("abc")
 Hbasex.put("abc", "123", %{"a" => %{"c1" => 1, "c2" => 2}})
 
 Hbasex.get("abc", "123")
-Hbasex.get("abc", "123", %{"a" => ["c1"]})
+Hbasex.get("abc", "123", columns: %{"a" => ["c1"]})
+
+Hbasex.get("abc", "123", filter_string: Hbasex.Helpers.filter_columns_containing(["c"]))
 
 Hbasex.scan("abc", 100)
 Hbasex.scan("abc", 100, prefix: "user123#")
