@@ -1,6 +1,8 @@
 language: elixir
 elixir:
   - 1.4.2
+env:
+  - MIX_ENV=travis
 otp_release:
   - 18.3
 group: edge
