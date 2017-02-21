@@ -58,7 +58,7 @@ defmodule Hbasex do
   end
 
   def prepare_columns(columns) do
-    tcolumns = for {family, qualifiers} <- columns do
+    for {family, qualifiers} <- columns do
       for qualifier <- qualifiers do
         TColumn.new(family: family, qualifier: qualifier)
       end

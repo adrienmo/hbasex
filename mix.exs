@@ -12,10 +12,10 @@ defmodule Hbasex.Mixfile do
      ##### Uncomment those two lines to generate the /src folder
      # compilers: [:thrift | Mix.compilers],
      # thrift_files: Mix.Utils.extract_files(["thrift"], [:thrift]),
-     description: description,
-     #elixirc_options: [warnings_as_errors: true],
-     package: package,
-     deps: deps]
+     description: description(),
+     # elixirc_options: [warnings_as_errors: true],
+     package: package(),
+     deps: deps()]
   end
 
   defp description do

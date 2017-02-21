@@ -1,8 +1,8 @@
 language: elixir
 elixir:
-  - 1.2.5
+  - 1.4.2
 otp_release:
-  - 18.0
+  - 18.3
 group: edge
 sudo: required
 services:
@@ -21,8 +21,3 @@ before_install:
   - id=$(docker run -d -v $PWD/data:/data adrienmo/hbase)
   - ip=$(docker inspect --format '{{ .NetworkSettings.IPAddress }}' $id)
   - echo "hbase started on $ip"
-
-script:
-  - MIX_ENV=travis mix deps.get
-  - MIX_ENV=travis mix compile
-  - MIX_ENV=travis mix test
