@@ -1,10 +1,10 @@
 language: elixir
 elixir:
-  - 1.2.5
+  - 1.4.2
 env:
   - MIX_ENV=travis
 otp_release:
-  - 18.0
+  - 18.3
 group: edge
 sudo: required
 services:

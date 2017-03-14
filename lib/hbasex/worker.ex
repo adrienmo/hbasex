@@ -9,7 +9,7 @@ defmodule Hbasex.Worker do
     case Hbasex.Client.start_link(config.host, config.thrift_port) do
       {:ok, pid} -> {:ok, pid}
       _ ->
-        Process.send_after(self, {:connect, config}, 5_000)
+        Process.send_after(self(), {:connect, config}, 5_000)
         {:ok, nil}
     end
   end
@@ -18,7 +18,7 @@ defmodule Hbasex.Worker do
     case Hbasex.Client.start_link(config.host, config.thrift_port) do
       {:ok, pid} -> {:noreply, pid}
       _ ->
-        Process.send_after(self, {:connect, config}, 5_000)
+        Process.send_after(self(), {:connect, config}, 5_000)
     end
   end
 
