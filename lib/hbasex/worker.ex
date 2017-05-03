@@ -1,4 +1,8 @@
 defmodule Hbasex.Worker do
+  @moduledoc """
+  Open and keep the connection to hbase.
+  Execute the requests to kafka.
+  """
   use GenServer
 
   def start_link(config) do

@@ -1,4 +1,7 @@
 defmodule Hbasex.RestClient do
+  @moduledoc """
+    Hbase rest API interface.
+  """
 
   defp get_base_url(%{host: host, rest_port: rest_port}) do
     "http://" <> host <> ":" <> to_string(rest_port) <> "/"

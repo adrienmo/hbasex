@@ -1,9 +1,12 @@
 defmodule Hbasex do
+  @moduledoc """
+  Hbasex library
+  """
   use Application
 
   alias Hbasex.Models.{TGet, TColumn, TColumnValue, TPut, TScan, TDelete}
+  require Logger
 
-  @default_host "localhost"
   @default_thrift_port 9090
   @default_rest_port 8080
 
@@ -166,9 +169,12 @@ defmodule Hbasex do
 
   defp extract_errors(log) do
     case log do
-      {{_, {_,{:exception, error}}}, _}  ->
+      {{_, {_, {:exception, error}}}, _}  ->
         {:error, error}
       _ ->
+        Logger.warn fn ->
+          "[Hbasex] could not extract error for #{inspect(log)}"
+        end
         {:error, nil}
     end
   end
