@@ -1,4 +1,8 @@
 defmodule Hbasex.Client do
+  @moduledoc """
+    Riffed client
+  """
+  
   use Riffed.Client,
   structs: Hbasex.Models,
   client_opts: [retries: 3],

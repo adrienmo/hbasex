@@ -6,7 +6,7 @@ defmodule Hbasex.Mixfile do
   def project do
     [app: :hbasex,
      version: @version,
-     elixir: "~> 1.2",
+     elixir: "~> 1.4",
      build_embedded: Mix.env == :prod,
      start_permanent: Mix.env == :prod,
      ##### Uncomment those two lines to generate the /src folder
@@ -31,7 +31,8 @@ defmodule Hbasex.Mixfile do
   defp deps do
     [
       {:riffed, github: "pinterest/riffed"},
-      {:poolboy, "~> 1.5"}
+      {:poolboy, "~> 1.5"},
+      {:credo, "~> 0.7", only: [:dev, :test]}
     ]
   end
 

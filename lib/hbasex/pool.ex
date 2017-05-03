@@ -1,4 +1,7 @@
 defmodule Hbasex.Pool do
+  @moduledoc """
+  Supervisor of worker pool.
+  """
   use Supervisor
 
   @default_pool :default
@@ -10,10 +13,10 @@ defmodule Hbasex.Pool do
   end
 
   def init(config) do
-    children = unless is_nil(config[:host]) and is_nil(config[:thrift_port]) do
-      [get_child_specs(config)]
-    else
+    children = if is_nil(config[:host]) and is_nil(config[:thrift_port]) do
       []
+    else
+      [get_child_specs(config)]
     end
 
     supervise(children, strategy: :one_for_one, name: __MODULE__)
