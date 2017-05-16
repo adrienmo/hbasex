@@ -10,20 +10,8 @@ defmodule Hbasex.Worker do
   end
 
   def init(config) do
-    case Hbasex.Client.start_link(config.host, config.thrift_port) do
-      {:ok, pid} -> {:ok, pid}
-      _ ->
-        Process.send_after(self(), {:connect, config}, 5_000)
-        {:ok, nil}
-    end
-  end
-
-  def handle_info({:connect, config}, _) do
-    case Hbasex.Client.start_link(config.host, config.thrift_port) do
-      {:ok, pid} -> {:noreply, pid}
-      _ ->
-        Process.send_after(self(), {:connect, config}, 5_000)
-    end
+    {:ok, pid} =  Hbasex.Client.start_link(config.host, config.thrift_port)
+    {:ok, pid}
   end
 
   def handle_call({:exec, fun, args}, _from, pid) do
