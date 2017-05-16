@@ -7,6 +7,8 @@ defmodule Hbasex.Pool do
   @default_pool :default
   @default_pool_size 10
   @default_max_overflow 0
+  @max_restarts Application.get_env(:hbasex, :max_restarts, 3)
+  @max_seconds Application.get_env(:hbasex, :max_seconds, 5)
 
   def start_link(config) do
     Supervisor.start_link(__MODULE__, config, [name: __MODULE__])
@@ -18,8 +20,8 @@ defmodule Hbasex.Pool do
     else
       [get_child_specs(config)]
     end
-
-    supervise(children, strategy: :one_for_one, name: __MODULE__)
+    supervise(children, strategy: :one_for_one, max_restarts: @max_restarts,
+                        max_seconds: @max_seconds, name: __MODULE__)
   end
 
   def connect(config) do

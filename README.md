@@ -36,7 +36,9 @@ config :hbasex,
   thrift_port: 9090,
   rest_port: 8080,
   pool_size: 10,
-  max_overflow: 0
+  max_overflow: 0,
+  max_restart: 3,
+  max_seconds: 5
 ```
 
 ## Usage
