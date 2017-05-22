@@ -39,9 +39,9 @@ defmodule Hbasex.Mixfile do
   defp package do
     [
       files: ~w(lib src README.md LICENSE VERSION mix.exs),
-      maintainers: ["Adrien Moreau"],
+      maintainers: ["Adrien Moreau", "Steffel Fénix"],
       licenses: ["MIT"],
-      links: %{github: "https://github.com/adrienmo/hbasex"}
+      links: %{github: "https://github.com/tongdao/hbasex"}
     ]
   end
 end
