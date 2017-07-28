@@ -28,8 +28,8 @@ defmodule Hbasex.RestClient do
 
   defp json_request(verb, url, body) do
     {verb, url, body}
-    body = to_char_list(body)
-    url = to_char_list(url)
+    body = to_charlist(body)
+    url = to_charlist(url)
     request = {url, [{'Accept', 'application/json'}], 'application/json', body}
     :httpc.request(verb, request, [], [])
   end
